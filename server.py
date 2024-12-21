@@ -108,3 +108,34 @@ def get_data():
         # Handle the case where 'data' is not defined
         # Return a JSON response with a 404 Not Found status code
         return {"message": "Data not found"}, 404
+    
+@app.route("/count")
+def count():
+    return {"data count": len(data)}, 200
+
+@app.route("/name_search")
+def find_person():
+    """Find a person in the database.
+
+    Returns:
+        json: Person if found, with status of 200
+        404: If not found
+        422: If argument 'q' is missing
+    """
+    # Get the argument 'q' from the query parameters of the request
+    query = request.args.get('q')
+
+    # Check if the query parameter 'q' is missing
+    if not query:
+        # Return a JSON response with a message indicating 'q' is missing and a 422 Unprocessable Entity status code
+        return {"message": "Query parameter 'q' is missing"}, 422
+
+    # Iterate through the 'data' list to look for the person whose first name matches the query
+    for person in data:
+        if query.lower() in person["first_name"].lower():
+            # If a match is found, return the person as a JSON response with a 200 OK status code
+            return person
+
+    # If no match is found, return a JSON response with a message indicating the person was not found and a 404 Not Found status code
+    return {"message": "Person not found"}, 404
+
